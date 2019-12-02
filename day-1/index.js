@@ -4,7 +4,7 @@ const csvParser = require('csv-parser');
 const getInput = new Promise((resolve, reject) => {
 	const input = [];
 	
-	fs.createReadStream('./data.csv')
+	fs.createReadStream('./day-1/data.csv')
 		.pipe(csvParser())
 		.on('data', (data) => {
 			input.push(+data.input)
@@ -21,16 +21,28 @@ const calculateFuel = (mass) => {
 	return (Math.floor(mass / 3)) - 2;
 };
 
+const calculateFuelWithFuelMass = (mass) => {
+	let totalFuel = 0;
+	let additionalFuel = calculateFuel(mass);
+
+	while (additionalFuel > 0) {
+		totalFuel += additionalFuel
+		additionalFuel = calculateFuel(additionalFuel);
+	}
+
+	return totalFuel;
+}
+
 getInput
 	.then(input => {
 		let total = 0;
 
 		input.forEach(mass => {
-			total += calculateFuel(mass);
+			total += calculateFuelWithFuelMass(mass);
 		});
 
 		console.log(total);
 	})
 	.catch(console.log)
 
-module.exports = calculateFuel;
+module.exports = { calculateFuel, calculateFuelWithFuelMass };
